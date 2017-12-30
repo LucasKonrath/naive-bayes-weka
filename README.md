@@ -136,6 +136,22 @@ Agora, Prob.(Clima = Nublado | Jogar = Não) é de 1/8.
 
 Isto se repete para todas as tabelas, inclusive a de Total de instâncias.
 
+| Temperatura | Jogar = Sim | Jogar = Não |
+|------------|-------------|--------------|
+|Quente | (2 + 1) / (9 + 3) | (2 + 1) / (5 + 3) | 
+|Moderada| (4 + 1) / (9 + 3) | (2 + 1) / (5 + 3) |
+|Fria| ( 3 + 1) / (9 + 3) | ( 1 + 1) / (5 + 3) |
+
+|Umidade| Jogar = Sim | Jogar = Não | 
+|-------|-------------|------------|
+|Alta|(3 + 1) / (9 + 2) | (4 + 1) / (5 + 2)|
+|Normal|(6 + 1) / (9 + 2)| (1 + 1) / (5 + 2)|
+
+|Vento| Jogar = Sim | Jogar = Não |
+|-----| ------------| ----------- |
+| Forte | (3 + 1) / (9 + 2) | (3 + 1) / (5 + 2) |
+| Fraco | (6 + 1) / (9 + 2) | (2 + 1) / (5 + 2) |
+
 |Jogar | Total |
 |----- | ----- |
 | Sim  | (9 + 1) / (14 + 2)|
