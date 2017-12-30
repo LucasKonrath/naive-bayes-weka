@@ -1,14 +1,16 @@
-## Machine Learning com o Weka
-### Veja como é surpreendentemente simples utilizar esta ferramenta.
+## Introdução a Machine Learning com o Weka
+### Veja como é simples utilizar esta ferramenta.
 
-O campo de Machine Learning pode ser um tanto obscuro para quem deseja iniciar seu aprendizado nele, porém meu objetivo neste artigo é mostrar o quão fácil pode ser iniciar o aprendizado utilizando o Weka. Primeiramente, o que é o Weka? O Weka é uma coleção de algoritmos de Machine Learning e Data Mining escrita em Java na Universidade de Waikato, Nova Zelândia. Por ser um arquivo .jar, utilizá-lo em código Java torna-se trivial, porém neste exemplo usaremos sua GUI pela facilidade e didática.
+O campo de Machine Learning pode ser um tanto obscuro para quem deseja iniciar seu aprendizado nele, porém meu objetivo neste artigo é mostrar o quão fácil pode ser iniciar o aprendizado utilizando o Weka. 
+
+Primeiramente, o que é o Weka? O Weka é uma coleção de algoritmos de Machine Learning e Data Mining escrita em Java na Universidade de Waikato, Nova Zelândia. Por ser um arquivo .jar, utilizá-lo em código Java torna-se trivial, porém neste exemplo usaremos sua GUI pela facilidade e didática.
 
 Este artigo será um passo a passo de como utilizar o Weka para, através de um algoritmo Naive Bayes, classificar um animal de acordo com suas características em 7 diferentes Classes de animais.
 
-Caso você não saiba do que se trata Naive Bayes, aqui vai uma rápida explicação:
+Caso você não saiba do que se trata o algoritmo Naive Bayes, aqui vai uma rápida explicação:
 
 O Algoritmo Naive Bayes se trata de um algoritmo de Classificação (existem outros tipos no campo da ciência de dados, como algoritmos de clustering e associação, porém não irei entrar em detalhes neste artigo). Neste caso, é uma Classificação Supervisionada, pois o _dataset_ que iremos utilizar teve um _agente supervisor_, ou seja, alguma pessoa que analisou os dados e os classificou de acordo com suas características manualmente.
-Tal algoritmo funciona bem no nosso caso, porém ele supõe que todos os elementos preditores sejam independentes entre si, o que normalmente não é o caso na vida real (normalmente temos atributos correlacionados).
+Tal algoritmo funciona bem no nosso caso, porém ele supõe que todos os elementos preditores sejam independentes entre si, o que não é o caso em todos os datasets (normalmente temos atributos correlacionados).
 
 Suponhamos que tenhamos o dataset abaixo, um exemplo clássico, que elenca várias opções e classifica se a pessoa irá ou não jogar golf no dia.
 
@@ -28,38 +30,46 @@ Suponhamos que tenhamos o dataset abaixo, um exemplo clássico, que elenca vári
 |   Nublado    |    Moderada         |   Alta      |   Forte    |   Sim     |
 |  Nublado     |   Quente          |    Normal     |   Fraco    |   Sim     |
 |   Chuva    |    Moderado         |  Alta       |  Forte     |   Não     |
+ 
+O que nós precisamos fazer é montar uma tabela para cada um dos quatro atributos geradores da classe Jogar, obtendo a porcentagem de chance da classe ser Sim ou Não baseada no atributo, e a porcentagem de ocorrências do atributo no Total de instâncias.
 
-Notem que nosso dataset tem quatro atributos que geram a _classe Jogar_. O que nós precisamos fazer é montar uma tabela para cada um desses atributos, obtendo a porcentagem de chance da classe Jogar ser Sim ou Não baseada no atributo.
-É importante frisar que existem 5 casos com o valor _Não_ e 9 com o valor _Sim_.
-
-| Clima | Jogar = Sim | Jogar = Não | Total |
-|-------|-------------|-------------|-------|
-| Ensolarado | 2/9      | 3/5         | 5/14  |
-| Nublado | 4/9 | 0/5 | 4/14 |
-| Chuva | 3/9 | 2/5 | 5/14 |
+| Clima | Jogar = Sim | Jogar = Não |
+|-------|-------------|-------------|
+| Ensolarado | 2/9      | 3/5       |
+| Nublado | 4/9 | 0/5 |
+| Chuva | 3/9 | 2/5 |
 
 
-| Temperatura | Jogar = Sim | Jogar = Não | Total |
-|------------|-------------|--------------|--------|
-|Quente | 2/9 | 2/5 | 4/14 |
-|Moderada| 4/9 | 2/5 | 6/14 |
-|Fria| 3/9 | 1/5 | 4/14 |
+| Temperatura | Jogar = Sim | Jogar = Não |
+|------------|-------------|--------------|
+|Quente | 2/9 | 2/5 | 
+|Moderada| 4/9 | 2/5 |
+|Fria| 3/9 | 1/5 |
 
-|Umidade| Jogar = Sim | Jogar = Não | Total|
-|-------|-------------|------------|-------|
-|Alta|3/9|4/5|7/14|
-|Normal|6/9|1/5|7/14|
+|Umidade| Jogar = Sim | Jogar = Não | 
+|-------|-------------|------------|
+|Alta|3/9|4/5|
+|Normal|6/9|1/5|
 
-|Vento| Jogar = Sim | Jogar = Não | Total |
-|-----| ------------| ----------- | ----- |
-| Forte | 3/9 | 3/5 | 6/14 |
-| Fraco | 6/9 | 2/5 | 8/14 |
+|Vento| Jogar = Sim | Jogar = Não |
+|-----| ------------| ----------- |
+| Forte | 3/9 | 3/5 |
+| Fraco | 6/9 | 2/5 |
 
-Certo, agora sabemos a probabilidade da pessoa Jogar ou não, com base em cada um dos atributos isoladamente. Caso recebamos, digamos a seguinte instância:
+E ainda precisamos de uma tabela com a porcentagem de ocorrencia das classes em relação ao total de instâncias.
 
-(Clima = Ensolarado, Temperatura = Fria, Umidade = Alta, Vento = Forte)
+|Jogar | Total |
+|----- | ----- |
+| Sim  | 9/14  |
+| Não  | 5/14  |
 
-Primeiro, veremos a probabilidade de Jogar ser sim:
+Certo, agora sabemos a probabilidade da pessoa Jogar ou não, com base em cada um dos atributos isoladamente. 
+
+Caso recebamos, digamos a seguinte instância:
+
+X = (Clima = Ensolarado, Temperatura = Fria, Umidade = Alta, Vento = Forte)
+
+Primeiro, veremos, nas cinco tabelas, a probabilidade de Jogar ser sim:
 
 Prob. (Clima = Ensolarado | Jogar = Sim) -> 2/9
 
@@ -71,7 +81,6 @@ Prob. (Umidade = Alta | Jogar = Sim) -> 3/9
 
 
 Prob. (Vento = Forte | Jogar = Sim) -> 3/9
-
 
 Prob. (Jogar = Sim) -> 9/14
 
@@ -87,21 +96,84 @@ Prob.(X | Jogar = Não) * Prob.(Jogar = Não)
 
 (3/5 * 1/5 * 4/5 * 3/5) *  (5/14) = 0.0206
 
-Agora o que nós devemos fazer é dividir estes dois valores pelo que chamamos de _evidência_, obtido pela multiplicação dos campos _Total_ de cada uma das tabelas de Atributos com os valores respectivos.
-
-Evid. = Prob.(Clima = Ensolarado) * Prob.(Temperatura = Fria) * Prob.(Umidade = Alta) * Prob.(Vento = Forte)
-
-Evid. = (5/14) * (4/14) * (7/14) * (6/14) = 0.02186
-
 Então, dividindo os valores:
 
-Prob. (Jogar = Sim | X) = 0.0053 / 0.02186 = 0.2424
+Prob. (X | Jogar = Sim) = 0.0053 
 
-Prob. (Jogar = Não | X) = 0.0206 / 0.02186 = 0.9421
+Prob. (X | Jogar = Não ) = 0.0206 
 
-Calculando as probabilidades, o algoritmo aponta uma chance de 79,54% de Não Jogar, e 20,46 % de Jogar. Ou seja, para esta instância, a classe teria o valor NÃO.
+Agora vamos calcular o percentual:
 
-Ainda existe o conceito da Estimativa de Laplace, utilizado quando existem valores sem nenhuma ocorrência, empregado para resolver o problema de frequência zero no cálculo, porém irei falar sobre isso depois.
+Chance de Jogar = 0.0053 / (0.0206 + 0.0053) = 20,46%
+
+Chance de Não Jogar = 0.0206 / (0.0206 + 0.0053) = 79,54%
+
+Ou seja, para esta instância, a classe teria o valor NÃO.
+
+Ainda existe o conceito da suavização, utilizada quando existem valores sem nenhuma ocorrência, empregado para resolver o problema de frequência zero no cálculo.
+
+Vamos analisar a seguinte probabilidade, para exemplificar:
+
+Prob.(Clima = Nublado | Jogar = Não) = 0/5 = 0
+
+Isso cria um problema no cálculo da probabilidade, pois o valor sempre será 0 quando esta evidência for utilizada. Ou seja, para o nosso modelo gerado, caso o clima fosse nublado, sempre a resposta para Jogar seria sim, pois ele zeraria o valor da probabilidade na multiplicação.
+
+É aplicada, então, uma técnica de suavização no nosso dataset (normalmente, a estimação de Laplace). O que será feito é, basicamente, adicionar registros fictícios no nosso dataset: finja que viu tal ocorrência k vezes mais (normalmente 1).
+
+Na prática, cada uma das tabelas de probabilidade obedeceria a seguinte fórmula:
+![](formula.png)
+
+Ou seja, aplicando na tabela de probabilidade de jogar conforme o clima:
+
+| Clima | Jogar = Sim | Jogar = Não |
+|-------|-------------|-------------|
+|Ensolarado| (2 + 1)/(9 + 3)| (3 + 1)/(5 + 3)|
+| Nublado | (4 + 1) / (9 + 3) | (0 + 1) / (5 + 3) |
+| Chuva | (3 + 1) / (9 + 3) | (2 + 1) / (5 + 3) |
+
+Antes, Prob.(Clima = Nublado | Jogar = Não) era 0.
+Agora, Prob.(Clima = Nublado | Jogar = Não) é de 1/8.
+
+Isto se repete para todas as tabelas, inclusive a de Total de instâncias.
+
+|Jogar | Total |
+|----- | ----- |
+| Sim  | (9 + 1) / (14 + 2)|
+| Não  | (5 + 1) / (14 + 2)|
+
+Agora, vamos calcular a porcentagem para a seguinte instância (ja com a estimativa de Laplace):
+
+X = (Clima = Nublado, Temperatura = Fria, Umidade = Alta, Vento = Forte)
+
+Prob. Sim = Prob.(Clima = Nublado | Jogar = Sim) * Prob.(Temperatura = Fria | Jogar = Sim) * Prob.(Umidade = Alta | Jogar = Sim) * Prob.(Vento = Forte | Jogar = Sim) * Prob.(Jogar = Sim)
+
+Substituindo:
+
+Prob. Sim = (5/12) * (4 / 12) * (4/11) * (4/11) * (10/16)
+Prob. Sim = 0.01147842056
+
+Mesma coisa para a probabilidade de ser não:
+
+Prob. Não = Prob.(Clima = Nublado | Jogar = Não) * Prob.(Temperatura = Fria | Jogar = Não) * Prob.(Umidade = Alta | Jogar = Não) * Prob.(Vento = Forte | Jogar = Não) * Prob.(Jogar = Não)
+
+Prob. Não = (1/8) * (2/8) * (5/7) * (4/7) * (6/16)
+Prob. Não = 0.00478316326
+
+Calculando a Porcentagem:
+
+Sim = 0.01147842056 / (0.01147842056 + 0.00478316326) * 100 = 70.5861168694 %
+
+Não = 0.00478316326 / (0.01147842056 + 0.00478316326) * 100 = 29.4138831306 %
+
+Submetendo a instância ao modelo Naive Bayes que treinei no Weka (e que lhe ensinarei como fazer em seguida) obtive o seguinte resultado:
+
+```
+=== Predictions on test set ===
+
+    inst#     actual  predicted error prediction
+        1        1:?      1:yes       0.706 
+```
+Ou seja, ele preveu que a resposta seria Sim, com a porcentagem de 70.6%, conforme nossos cálculos. 
 
 ### Utilizando o Weka
 
@@ -174,7 +246,9 @@ Selecionando o atributo Type, podemos ver quantas instâncias pertencem a cada t
 
 ![](weka3.png)
 
-Certo, o que faremos agora é gerar o modelo utilizando o algoritmo Naive Bayes. Clique na aba Classify (lembre-se, o Naive Bayes é um algoritmo de classificação). Clique na opção Choose e selecione o NaiveBayes, conforme imagem.
+Certo, o que faremos agora é gerar o modelo utilizando o algoritmo Naive Bayes. 
+
+Clique na aba Classify, depois clique na opção Choose e selecione o NaiveBayes, conforme imagem.
 
 ![](weka4.png)
 
@@ -187,8 +261,13 @@ Essa é aquela matriz que tinhamos montado antes, para o atributo animal.
 
 ![](weka5.png)
 
-Ué, mas como assim, existe 1 animal desses em todas as classes? Isso se refere à estimativa de Laplace, que falei brevemente anteriormente.
-Porque isto ocorre? Caso uma combinação não existe na base, sua porcentagem sendo 0/X, por exemplo, ao realizar a multiplicação para calcular a probabilidade de ocorrência dela, seria 0. Basicamente, quando houver uma combinação instância/classe com 0 ocorrências, é adicionada uma combinação fictícia simulando-a. A idéia é que a porcentagem, então, nunca fique zerada. Isso deve ser feito em todas as classes para evitar viés nos cálculos (o que explica porque a classificação correta do animal tem valor 2.0, e no caso do Sapo, 3.0).
+Ué, mas como assim, existe 1 animal desses em todas as classes? Isso se refere à suavização, que falei brevemente anteriormente.
+
+### Porque isto ocorre? 
+
+Em alguns casos, a frequência pode ser 0, como, por exemplo,nenhuma instância com o atributo Milk é de alguma classe que não mamífero. Caso não seja utilizada uma técnica de suavização
+
+Caso uma combinação não existe na base, sua porcentagem sendo 0/X, por exemplo, ao realizar a multiplicação para calcular a probabilidade de ocorrência dela, seria 0. Basicamente, quando houver uma combinação instância/classe com 0 ocorrências, é adicionada uma combinação fictícia simulando-a. A idéia é que a porcentagem, então, nunca fique zerada. Isso deve ser feito em todas as classes para evitar viés nos cálculos (o que explica porque a classificação correta do animal tem valor 2.0, e no caso do Sapo, 3.0).
 
 Agora, temos nosso modelo construído e que será testado. 
 
